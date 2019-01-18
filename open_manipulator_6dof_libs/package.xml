@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>open_manipulator_6dof_libs</name>
+  <version>1.0.0</version>
+  <description>
+    OpenManipulator 6DOF library (Kinematics lib., Dynamixel lib., Drawing path lib.)
+  </description>
+  <license>Apache 2.0</license>
+  <author email="zang09@naver.com">Hae-Bum Jung</author>
+  <author email="thlim@robotis.com">Darby Lim</author>
+  <author email="hjkim@robotis.com">Hye-Jong KIM</author>
+  <author email="jhshim@robotis.com">Ryan Shim</author>
+  <author email="yhna@robotis.com">Yong-Ho Na</author>
+  <maintainer email="pyo@robotis.com">Pyo</maintainer>
+  <url type="repository">https://github.com/ROBOTIS-GIT/open_manipulator_friends</url>
+  <buildtool_depend>catkin</buildtool_depend>
+  <depend>roscpp</depend>
+  <depend>robotis_manipulator</depend>
+  <depend>dynamixel_workbench_toolbox</depend>
+  <depend>cmake_modules</depend>
+</package>

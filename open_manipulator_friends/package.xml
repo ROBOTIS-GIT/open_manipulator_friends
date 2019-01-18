@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>open_manipulator_friends</name>
+  <version>1.0.0</version>
+  <description>
+    OpenManipulator friends package
+  </description>
+  <license>Apache 2.0</license>
+  <author email="zang09@naver.com">Hae-Bum Jung</author>
+  <author email="thlim@robotis.com">Darby Lim</author>
+  <author email="hjkim@robotis.com">Hye-Jong KIM</author>
+  <author email="jhshim@robotis.com">Ryan Shim</author>
+  <author email="yhna@robotis.com">Yong-Ho Na</author>
+  <maintainer email="pyo@robotis.com">Pyo</maintainer>
+  <url type="repository">https://github.com/ROBOTIS-GIT/open_manipulator_friends</url>
+  <buildtool_depend>catkin</buildtool_depend>
+  <export><metapackage/></export>
+</package>
