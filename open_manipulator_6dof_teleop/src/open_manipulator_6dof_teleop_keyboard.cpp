@@ -171,7 +171,7 @@ void OM_TELEOP::printText()
     printf("p : increase joint 5 angle\n");
     printf("; : decrease joint 5 angle\n");
     printf("[ : increase joint 6 angle\n");
-    printf("' : decrease joint 6 angle\n");
+    printf("] : decrease joint 6 angle\n");
     printf("\n");
     printf("g : gripper open\n");
     printf("f : gripper close\n");
@@ -361,9 +361,9 @@ void OM_TELEOP::setGoal(char ch)
         joint_name.push_back("joint6");
         setJointSpacePathFromPresent(joint_name, goalJoint, PATH_TIME);
     }
-    else if(ch == 'p' || ch == 'P')
+    else if(ch == '[' || ch == '{')
     {
-        printf("input : p \tdecrease(++) joint 5 angle\n");
+        printf("input : [ \tdecrease(++) joint 6 angle\n");
         std::vector<std::string> joint_name;
         joint_name.push_back("joint1");
         joint_name.push_back("joint2");
@@ -373,9 +373,9 @@ void OM_TELEOP::setGoal(char ch)
         joint_name.push_back("joint6"); goalJoint.at(5) = JOINT_DELTA;
         setJointSpacePathFromPresent(joint_name, goalJoint, PATH_TIME);
     }
-    else if(ch == ';' || ch == ':')
+    else if(ch == ']' || ch == '}')
     {
-        printf("input : ; \tdecrease(--) joint 5 angle\n");
+        printf("input : ] \tdecrease(--) joint 6 angle\n");
         std::vector<std::string> joint_name;
         joint_name.push_back("joint1");
         joint_name.push_back("joint2");
@@ -413,7 +413,7 @@ void OM_TELEOP::setGoal(char ch)
 
         joint_name.push_back("joint1"); joint_angle.push_back(0.0);
         joint_name.push_back("joint2"); joint_angle.push_back(-0.78);
-        joint_name.push_back("joint3"); joint_angle.push_back(1.6);
+        joint_name.push_back("joint3"); joint_angle.push_back(1.5);
         joint_name.push_back("joint4"); joint_angle.push_back(0.0);
         joint_name.push_back("joint5"); joint_angle.push_back(0.8);
         joint_name.push_back("joint6"); joint_angle.push_back(0.0);
