@@ -419,7 +419,7 @@ bool OM_CONTROLLER::goalJointSpacePathFromPresentCallback(open_manipulator_msgs:
     pthread_mutex_lock(&mutex_); // mutex lock
     {
         trajectoryBufferClear();
-        open_manipulator_.jointTrajectoryMoveToPresentPosition(target_angle, req.path_time, present_joint_value);
+        open_manipulator_.jointTrajectoryMoveFromPresentPosition(target_angle, req.path_time, present_joint_value);
     }
     pthread_mutex_unlock(&mutex_); // mutex unlock
     startCalThread();
@@ -547,7 +547,7 @@ bool OM_CONTROLLER::goalTaskSpacePathFromPresentCallback(open_manipulator_msgs::
     pthread_mutex_lock(&mutex_); // mutex lock
     {
         trajectoryBufferClear();
-        open_manipulator_.taskTrajectoryMoveToPresentPose(req.planning_group, target_pose, req.path_time, present_joint_value);
+        open_manipulator_.taskTrajectoryMoveFromPresentPose(req.planning_group, target_pose, req.path_time, present_joint_value);
     }
     pthread_mutex_unlock(&mutex_); // mutex unlock
     startCalThread();
@@ -568,7 +568,7 @@ bool OM_CONTROLLER::goalTaskSpacePathFromPresentPositionOnlyCallback(open_manipu
     pthread_mutex_lock(&mutex_); // mutex lock
     {
         trajectoryBufferClear();
-        open_manipulator_.taskTrajectoryMoveToPresentPose(req.planning_group, position, req.path_time, present_joint_value);
+        open_manipulator_.taskTrajectoryMoveFromPresentPose(req.planning_group, position, req.path_time, present_joint_value);
     }
     pthread_mutex_unlock(&mutex_); // mutex unlock
     startCalThread();
@@ -591,7 +591,7 @@ bool OM_CONTROLLER::goalTaskSpacePathFromPresentOrientationOnlyCallback(open_man
     pthread_mutex_lock(&mutex_); // mutex lock
     {
         trajectoryBufferClear();
-        open_manipulator_.taskTrajectoryMoveToPresentPose(req.planning_group, orientation, req.path_time, present_joint_value);
+        open_manipulator_.taskTrajectoryMoveFromPresentPose(req.planning_group, orientation, req.path_time, present_joint_value);
     }
     pthread_mutex_unlock(&mutex_); // mutex unlock
     startCalThread();
