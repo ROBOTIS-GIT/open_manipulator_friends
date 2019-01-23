@@ -33,6 +33,12 @@
   <!-- Link5 -->
   <RefLink ref="link5"/>
 
+  <!-- Link6 -->
+  <RefLink ref="link6"/>
+
+  <!-- Link7 -->
+  <RefLink ref="link7"/>
+
   <!-- gripper_link -->
   <RefLink ref="gripper_link"/>
 
