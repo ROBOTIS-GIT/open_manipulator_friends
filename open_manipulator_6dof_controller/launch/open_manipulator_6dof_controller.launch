@@ -12,7 +12,7 @@
   <arg name="planning_group_name"    default="arm"/>
 
   <group if="$(arg use_moveit)">
-    <include file="$(find open_manipulator_controller)/launch/open_manipulator_moveit.launch">
+    <include file="$(find open_manipulator_6dof_controller)/launch/open_manipulator_6dof_moveit.launch">
     </include>
   </group>
 
