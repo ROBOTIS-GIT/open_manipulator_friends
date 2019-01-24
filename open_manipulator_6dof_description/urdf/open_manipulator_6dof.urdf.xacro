@@ -20,7 +20,7 @@
       </actuator>
     </transmission>
   </xacro:macro>
-cm
+
   <!-- World -->
   <link name="world">
   </link>
