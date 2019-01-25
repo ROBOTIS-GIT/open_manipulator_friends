@@ -21,18 +21,18 @@
 using namespace open_manipulator_controller;
 
 OM_CONTROLLER::OM_CONTROLLER(std::string usb_port, std::string baud_rate)
-  :node_handle_(""),
-    priv_node_handle_("~"),
-    tool_ctrl_flag_(false),
-    comm_timer_thread_flag_(false),
-    cal_thread_flag_(false),
-    moveit_plan_flag_(false),
-    moving_trajectory_flag_(false),
-    using_platform_(false),
-    using_moveit_(false),
-    moveit_plan_only_(true),
-    control_period_(0.010f),
-    mutex_(PTHREAD_MUTEX_INITIALIZER)
+    :node_handle_(""),
+     priv_node_handle_("~"),
+     tool_ctrl_flag_(false),
+     comm_timer_thread_flag_(false),
+     cal_thread_flag_(false),
+     moveit_plan_flag_(false),
+     moving_trajectory_flag_(false),
+     using_platform_(false),
+     using_moveit_(false),
+     moveit_plan_only_(true),
+     control_period_(0.010f),
+     mutex_(PTHREAD_MUTEX_INITIALIZER)
 {
   control_period_ = priv_node_handle_.param<double>("control_period", 0.010f);
   using_platform_ = priv_node_handle_.param<bool>("using_platform", false);
@@ -119,13 +119,13 @@ void *OM_CONTROLLER::commTimerThread(void *param)
         tx_joint_way_point = controller->joint_way_point_buf_.front();
         controller->present_joint_value = tx_joint_way_point;
         controller->joint_way_point_buf_.pop();
-        //         RM_LOG::PRINT("[comm thread] ", "BLUE");
-        //         RM_LOG::PRINT(" j1 ", tx_joint_way_point.at(0).position, 3, "BLUE");
-        //         RM_LOG::PRINT(" j2 ", tx_joint_way_point.at(1).position, 3, "BLUE");
-        //         RM_LOG::PRINT(" j3 ", tx_joint_way_point.at(2).position, 3, "BLUE");
-        //         RM_LOG::PRINT(" j4 ", tx_joint_way_point.at(3).position, 3, "BLUE");
-        //         RM_LOG::PRINT(" size ", controller->joint_way_point_buf_.size(), 3, "BLUE");
-        //         RM_LOG::PRINTLN(" ");
+//         RM_LOG::PRINT("[comm thread] ", "BLUE");
+//         RM_LOG::PRINT(" j1 ", tx_joint_way_point.at(0).position, 3, "BLUE");
+//         RM_LOG::PRINT(" j2 ", tx_joint_way_point.at(1).position, 3, "BLUE");
+//         RM_LOG::PRINT(" j3 ", tx_joint_way_point.at(2).position, 3, "BLUE");
+//         RM_LOG::PRINT(" j4 ", tx_joint_way_point.at(3).position, 3, "BLUE");
+//         RM_LOG::PRINT(" size ", controller->joint_way_point_buf_.size(), 3, "BLUE");
+//         RM_LOG::PRINTLN(" ");
       }
       else
         controller->moving_trajectory_flag_ = false;
@@ -145,18 +145,17 @@ void *OM_CONTROLLER::commTimerThread(void *param)
     clock_gettime(CLOCK_MONOTONIC, &curr_time);
 
     /////
-    double delta_nsec = controller->getControlPeriod() - ((next_time.tv_sec - curr_time.tv_sec) + ((double)(next_time.tv_nsec - curr_time.tv_nsec)*0.000000001));
-    if(delta_nsec > controller->getControlPeriod())
-    {
-      RM_LOG::WARN("Communication cycle time exceeded. : ", delta_nsec,5);
-      next_time = curr_time;
-    }
-    else
-    {
-      //RM_LOG::PRINTLN("Communication cycle time : ", delta_nsec, 5, "GREEN");
-      clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &next_time, NULL);
-    }
-    /////
+     double delta_nsec = controller->getControlPeriod() - ((next_time.tv_sec - curr_time.tv_sec) + ((double)(next_time.tv_nsec - curr_time.tv_nsec)*0.000000001));
+     if(delta_nsec > controller->getControlPeriod())
+     {
+       RM_LOG::WARN("Communication cycle time exceeded. : ", delta_nsec);
+       next_time = curr_time;
+     }
+     else
+     {
+       clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &next_time, NULL);
+     }
+     /////
   }
   return 0;
 }
@@ -200,28 +199,26 @@ void *OM_CONTROLLER::calThread(void *param)
     if(tempJointWayPoint.size() != 0)
     {
       controller->joint_way_point_buf_.push(tempJointWayPoint);
-      if(!controller->open_manipulator_.isMoving() && trajectory_progress < 100) // error
-      {
-        RM_LOG::ERROR("[cal thread] Trajectory creation failed ");
-        controller->cal_thread_flag_ = false;
-        controller->moving_trajectory_flag_ = true;
-      }
-      else
-      {
-        RM_LOG::PRINT("\r[cal thread] Trajectory creation : ",trajectory_progress , 0);
-        RM_LOG::PRINT(" %");
-      }
 
-      //       RM_LOG::PRINT("[cal thread]");
-      //       RM_LOG::PRINT(" j1 ", tempJointWayPoint.at(0).position);
-      //       RM_LOG::PRINT(" j2 ", tempJointWayPoint.at(1).position);
-      //       RM_LOG::PRINT(" j3 ", tempJointWayPoint.at(2).position);
-      //       RM_LOG::PRINT(" j4 ", tempJointWayPoint.at(3).position);
-      //       RM_LOG::PRINT(" size ", controller->joint_way_point_buf_.size());
-      //       RM_LOG::PRINT(" tick_time : ", tick_time);
-      //       RM_LOG::PRINTLN(" ");
+      // debug
+      if(controller->using_moveit_ == false)
+      {
+        if(!controller->open_manipulator_.isMoving() && trajectory_progress < 100) // error
+        {
+          char str[100];
+          sprintf(str, "[cal thread] Trajectory creation failed : %d %%", trajectory_progress);
+          RM_LOG::ERROR(str);
+          controller->cal_thread_flag_ = false;
+          controller->moving_trajectory_flag_ = true;
+        }
+        else
+        {
+          RM_LOG::PRINT("[cal thread] Trajectory creation :",trajectory_progress , 0);
+          RM_LOG::PRINT(" %\r");
+        }
+      }
+      /////////
     }
-
 
     if(controller->tool_ctrl_flag_)
     {
@@ -285,8 +282,8 @@ void OM_CONTROLLER::initPublisher()
     gazebo_joints_name.reserve(gazebo_joints_name.size() + opm_tools_name.size());
 
     gazebo_joints_name.insert(gazebo_joints_name.end(),
-                              opm_tools_name.begin(),
-                              opm_tools_name. end());
+                            opm_tools_name.begin(),
+                            opm_tools_name. end());
 
     for (auto const& name:gazebo_joints_name)
     {
@@ -305,29 +302,30 @@ void OM_CONTROLLER::initSubscriber()
     display_planned_path_sub_ = node_handle_.subscribe("/move_group/display_planned_path", 100,
                                                        &OM_CONTROLLER::displayPlannedPathCallback, this);
     move_group_goal_sub_ = node_handle_.subscribe("/move_group/goal", 100,
-                                                  &OM_CONTROLLER::moveGroupGoalCallback, this);
+                                                       &OM_CONTROLLER::moveGroupGoalCallback, this);
     execute_traj_goal_sub_ = node_handle_.subscribe("/execute_trajectory/goal", 100,
-                                                    &OM_CONTROLLER::executeTrajGoalCallback, this);
+                                                       &OM_CONTROLLER::executeTrajGoalCallback, this);
   }
 }
 
 void OM_CONTROLLER::initServer()
 {
-  goal_joint_space_path_server_                   = priv_node_handle_.advertiseService("goal_joint_space_path", &OM_CONTROLLER::goalJointSpacePathCallback, this);
-  goal_joint_space_path_from_present_server_      = priv_node_handle_.advertiseService("goal_joint_space_path_from_present", &OM_CONTROLLER::goalJointSpacePathFromPresentCallback, this);
-
-  goal_joint_space_path_to_kinematics_pose_server_ = priv_node_handle_.advertiseService("goal_joint_space_path_to_kinematics_pose", &OM_CONTROLLER::goalJointSpacePathToKinematicsPoseCallback, this);
+  goal_joint_space_path_server_                     = priv_node_handle_.advertiseService("goal_joint_space_path", &OM_CONTROLLER::goalJointSpacePathCallback, this);
+  goal_joint_space_path_to_kinematics_pose_server_  = priv_node_handle_.advertiseService("goal_joint_space_path_to_kinematics_pose", &OM_CONTROLLER::goalJointSpacePathToKinematicsPoseCallback, this);
 
   goal_task_space_path_server_                  = priv_node_handle_.advertiseService("goal_task_space_path", &OM_CONTROLLER::goalTaskSpacePathCallback, this);
   goal_task_space_path_position_only_server_    = priv_node_handle_.advertiseService("goal_task_space_path_position_only", &OM_CONTROLLER::goalTaskSpacePathPositionOnlyCallback, this);
   goal_task_space_path_orientation_only_server_ = priv_node_handle_.advertiseService("goal_task_space_path_orientation_only", &OM_CONTROLLER::goalTaskSpacePathOrientationOnlyCallback, this);
+
+  goal_joint_space_path_from_present_server_      = priv_node_handle_.advertiseService("goal_joint_space_path_from_present", &OM_CONTROLLER::goalJointSpacePathFromPresentCallback, this);
+
   goal_task_space_path_from_present_server_                   = priv_node_handle_.advertiseService("goal_task_space_path_from_present", &OM_CONTROLLER::goalTaskSpacePathFromPresentCallback, this);
   goal_task_space_path_from_present_position_only_server_     = priv_node_handle_.advertiseService("goal_task_space_path_from_present_position_only", &OM_CONTROLLER::goalTaskSpacePathFromPresentPositionOnlyCallback, this);
   goal_task_space_path_from_present_orientation_only_server_  = priv_node_handle_.advertiseService("goal_task_space_path_from_present_orientation_only", &OM_CONTROLLER::goalTaskSpacePathFromPresentOrientationOnlyCallback, this);
 
   goal_tool_control_server_                 = priv_node_handle_.advertiseService("goal_tool_control", &OM_CONTROLLER::goalToolControlCallback, this);
-  goal_drawing_trajectory_server_           = priv_node_handle_.advertiseService("goal_drawing_trajectory", &OM_CONTROLLER::goalDrawingTrajectoryCallback, this);
   set_actuator_state_server_                = priv_node_handle_.advertiseService("set_actuator_state", &OM_CONTROLLER::setActuatorStateCallback, this);
+  goal_drawing_trajectory_server_           = priv_node_handle_.advertiseService("goal_drawing_trajectory", &OM_CONTROLLER::goalDrawingTrajectoryCallback, this);
 
   if (using_moveit_ == true)
   {
@@ -407,29 +405,8 @@ bool OM_CONTROLLER::goalJointSpacePathCallback(open_manipulator_msgs::SetJointPo
   return true;
 }
 
-bool OM_CONTROLLER::goalJointSpacePathFromPresentCallback(open_manipulator_msgs::SetJointPosition::Request  &req,
-                                                          open_manipulator_msgs::SetJointPosition::Response &res)
-{
-  std::vector <double> target_angle;
-
-  for(int i = 0; i < req.joint_position.joint_name.size(); i ++)
-    target_angle.push_back(req.joint_position.position.at(i));
-
-  waitCalThreadToTerminate();
-  pthread_mutex_lock(&mutex_); // mutex lock
-  {
-    trajectoryBufferClear();
-    open_manipulator_.jointTrajectoryMoveFromPresentPosition(target_angle, req.path_time, present_joint_value);
-  }
-  pthread_mutex_unlock(&mutex_); // mutex unlock
-  startCalThread();
-
-  res.is_planned = true;
-  return true;
-}
-
 bool OM_CONTROLLER::goalJointSpacePathToKinematicsPoseCallback(open_manipulator_msgs::SetKinematicsPose::Request  &req,
-                                                               open_manipulator_msgs::SetKinematicsPose::Response &res)
+                                                                open_manipulator_msgs::SetKinematicsPose::Response &res)
 {
   KinematicPose target_pose;
   target_pose.position[0] = req.kinematics_pose.pose.position.x;
@@ -437,9 +414,9 @@ bool OM_CONTROLLER::goalJointSpacePathToKinematicsPoseCallback(open_manipulator_
   target_pose.position[2] = req.kinematics_pose.pose.position.z;
 
   Eigen::Quaterniond q(req.kinematics_pose.pose.orientation.w,
-                       req.kinematics_pose.pose.orientation.x,
-                       req.kinematics_pose.pose.orientation.y,
-                       req.kinematics_pose.pose.orientation.z);
+                        req.kinematics_pose.pose.orientation.x,
+                        req.kinematics_pose.pose.orientation.y,
+                        req.kinematics_pose.pose.orientation.z);
 
   target_pose.orientation = RM_MATH::convertQuaternionToRotation(q);
 
@@ -465,9 +442,9 @@ bool OM_CONTROLLER::goalTaskSpacePathCallback(open_manipulator_msgs::SetKinemati
   target_pose.position[2] = req.kinematics_pose.pose.position.z;
 
   Eigen::Quaterniond q(req.kinematics_pose.pose.orientation.w,
-                       req.kinematics_pose.pose.orientation.x,
-                       req.kinematics_pose.pose.orientation.y,
-                       req.kinematics_pose.pose.orientation.z);
+                        req.kinematics_pose.pose.orientation.x,
+                        req.kinematics_pose.pose.orientation.y,
+                        req.kinematics_pose.pose.orientation.z);
 
   target_pose.orientation = RM_MATH::convertQuaternionToRotation(q);
 
@@ -485,7 +462,7 @@ bool OM_CONTROLLER::goalTaskSpacePathCallback(open_manipulator_msgs::SetKinemati
 }
 
 bool OM_CONTROLLER::goalTaskSpacePathPositionOnlyCallback(open_manipulator_msgs::SetKinematicsPose::Request  &req,
-                                                          open_manipulator_msgs::SetKinematicsPose::Response &res)
+                                           open_manipulator_msgs::SetKinematicsPose::Response &res)
 {
   Eigen::Vector3d position;
   position[0] = req.kinematics_pose.pose.position.x;
@@ -506,12 +483,12 @@ bool OM_CONTROLLER::goalTaskSpacePathPositionOnlyCallback(open_manipulator_msgs:
 }
 
 bool OM_CONTROLLER::goalTaskSpacePathOrientationOnlyCallback(open_manipulator_msgs::SetKinematicsPose::Request  &req,
-                                                             open_manipulator_msgs::SetKinematicsPose::Response &res)
+                                              open_manipulator_msgs::SetKinematicsPose::Response &res)
 {
   Eigen::Quaterniond q(req.kinematics_pose.pose.orientation.w,
-                       req.kinematics_pose.pose.orientation.x,
-                       req.kinematics_pose.pose.orientation.y,
-                       req.kinematics_pose.pose.orientation.z);
+                        req.kinematics_pose.pose.orientation.x,
+                        req.kinematics_pose.pose.orientation.y,
+                        req.kinematics_pose.pose.orientation.z);
 
   Eigen::Matrix3d orientation = RM_MATH::convertQuaternionToRotation(q);
 
@@ -528,8 +505,29 @@ bool OM_CONTROLLER::goalTaskSpacePathOrientationOnlyCallback(open_manipulator_ms
   return true;
 }
 
+bool OM_CONTROLLER::goalJointSpacePathFromPresentCallback(open_manipulator_msgs::SetJointPosition::Request  &req,
+                                                        open_manipulator_msgs::SetJointPosition::Response &res)
+{
+  std::vector <double> target_angle;
+
+  for(int i = 0; i < req.joint_position.joint_name.size(); i ++)
+    target_angle.push_back(req.joint_position.position.at(i));
+
+  waitCalThreadToTerminate();
+  pthread_mutex_lock(&mutex_); // mutex lock
+  {
+    trajectoryBufferClear();
+    open_manipulator_.jointTrajectoryMoveFromPresentPosition(target_angle, req.path_time, present_joint_value);
+  }
+  pthread_mutex_unlock(&mutex_); // mutex unlock
+  startCalThread();
+
+  res.is_planned = true;
+  return true;
+}
+
 bool OM_CONTROLLER::goalTaskSpacePathFromPresentCallback(open_manipulator_msgs::SetKinematicsPose::Request  &req,
-                                                         open_manipulator_msgs::SetKinematicsPose::Response &res)
+                                                      open_manipulator_msgs::SetKinematicsPose::Response &res)
 {
   KinematicPose target_pose;
   target_pose.position[0] = req.kinematics_pose.pose.position.x;
@@ -537,9 +535,9 @@ bool OM_CONTROLLER::goalTaskSpacePathFromPresentCallback(open_manipulator_msgs::
   target_pose.position[2] = req.kinematics_pose.pose.position.z;
 
   Eigen::Quaterniond q(req.kinematics_pose.pose.orientation.w,
-                       req.kinematics_pose.pose.orientation.x,
-                       req.kinematics_pose.pose.orientation.y,
-                       req.kinematics_pose.pose.orientation.z);
+                        req.kinematics_pose.pose.orientation.x,
+                        req.kinematics_pose.pose.orientation.y,
+                        req.kinematics_pose.pose.orientation.z);
 
   target_pose.orientation = RM_MATH::convertQuaternionToRotation(q);
 
@@ -557,7 +555,7 @@ bool OM_CONTROLLER::goalTaskSpacePathFromPresentCallback(open_manipulator_msgs::
 }
 
 bool OM_CONTROLLER::goalTaskSpacePathFromPresentPositionOnlyCallback(open_manipulator_msgs::SetKinematicsPose::Request  &req,
-                                                                     open_manipulator_msgs::SetKinematicsPose::Response &res)
+                                                    open_manipulator_msgs::SetKinematicsPose::Response &res)
 {
   Eigen::Vector3d position;
   position[0] = req.kinematics_pose.pose.position.x;
@@ -578,12 +576,12 @@ bool OM_CONTROLLER::goalTaskSpacePathFromPresentPositionOnlyCallback(open_manipu
 }
 
 bool OM_CONTROLLER::goalTaskSpacePathFromPresentOrientationOnlyCallback(open_manipulator_msgs::SetKinematicsPose::Request  &req,
-                                                                        open_manipulator_msgs::SetKinematicsPose::Response &res)
+                                                       open_manipulator_msgs::SetKinematicsPose::Response &res)
 {
   Eigen::Quaterniond q(req.kinematics_pose.pose.orientation.w,
-                       req.kinematics_pose.pose.orientation.x,
-                       req.kinematics_pose.pose.orientation.y,
-                       req.kinematics_pose.pose.orientation.z);
+                        req.kinematics_pose.pose.orientation.x,
+                        req.kinematics_pose.pose.orientation.y,
+                        req.kinematics_pose.pose.orientation.z);
 
   Eigen::Matrix3d orientation = RM_MATH::convertQuaternionToRotation(q);
 
@@ -595,6 +593,52 @@ bool OM_CONTROLLER::goalTaskSpacePathFromPresentOrientationOnlyCallback(open_man
   }
   pthread_mutex_unlock(&mutex_); // mutex unlock
   startCalThread();
+
+  res.is_planned = true;
+  return true;
+}
+
+bool OM_CONTROLLER::goalToolControlCallback(open_manipulator_msgs::SetJointPosition::Request  &req,
+                                            open_manipulator_msgs::SetJointPosition::Response &res)
+{
+  pthread_mutex_lock(&mutex_); // mutex lock
+  {
+    tool_ctrl_flag_ = true;
+    for(int i = 0; i < req.joint_position.joint_name.size(); i ++)
+      open_manipulator_.toolMove(req.joint_position.joint_name.at(i), req.joint_position.position.at(i));
+  }
+  pthread_mutex_unlock(&mutex_); // mutex unlock
+  if(!cal_thread_flag_) startCalThread();
+
+  res.is_planned = true;
+  return true;
+}
+
+bool OM_CONTROLLER::setActuatorStateCallback(open_manipulator_msgs::SetActuatorState::Request  &req,
+                                             open_manipulator_msgs::SetActuatorState::Response &res)
+{
+  if(req.set_actuator_state == true) // torque on
+  {
+    RM_LOG::PRINTLN("[Set actuator state] Wait a second for actuator enable", "GREEN");
+    waitCommThreadToTerminate();
+    open_manipulator_.allActuatorEnable();
+
+    pthread_mutex_lock(&mutex_); // mutex lock
+    {
+      moving_trajectory_flag_ = false;
+      present_joint_value = open_manipulator_.receiveAllJointActuatorValue();
+    }
+    pthread_mutex_unlock(&mutex_); // mutex unlock
+
+    startCommTimerThread();
+  }
+  else // torque off
+  {
+    RM_LOG::PRINTLN("[Set actuator state] Wait a second for actuator disable", "GREEN");
+    waitCommThreadToTerminate();
+    open_manipulator_.allActuatorDisable();
+    startCommTimerThread();
+  }
 
   res.is_planned = true;
   return true;
@@ -684,70 +728,6 @@ bool OM_CONTROLLER::goalDrawingTrajectoryCallback(open_manipulator_msgs::SetDraw
   return true;
 }
 
-bool OM_CONTROLLER::goalToolControlCallback(open_manipulator_msgs::SetJointPosition::Request  &req,
-                                            open_manipulator_msgs::SetJointPosition::Response &res)
-{
-  pthread_mutex_lock(&mutex_); // mutex lock
-  {
-    tool_ctrl_flag_ = true;
-    for(int i = 0; i < req.joint_position.joint_name.size(); i ++)
-      open_manipulator_.toolMove(req.joint_position.joint_name.at(i), req.joint_position.position.at(i));
-  }
-  pthread_mutex_unlock(&mutex_); // mutex unlock
-  if(!cal_thread_flag_) startCalThread();
-
-  res.is_planned = true;
-  return true;
-}
-
-bool OM_CONTROLLER::setJointPositionMsgCallback(open_manipulator_msgs::SetJointPosition::Request &req,
-                                                open_manipulator_msgs::SetJointPosition::Response &res)
-{
-  open_manipulator_msgs::JointPosition msg = req.joint_position;
-  res.is_planned = calcPlannedPath(req.planning_group, msg);
-
-  return true;
-}
-
-bool OM_CONTROLLER::setKinematicsPoseMsgCallback(open_manipulator_msgs::SetKinematicsPose::Request &req,
-                                                 open_manipulator_msgs::SetKinematicsPose::Response &res)
-{
-  open_manipulator_msgs::KinematicsPose msg = req.kinematics_pose;
-  res.is_planned = calcPlannedPath(req.planning_group, msg);
-
-  return true;
-}
-
-bool OM_CONTROLLER::setActuatorStateCallback(open_manipulator_msgs::SetActuatorState::Request  &req,
-                                             open_manipulator_msgs::SetActuatorState::Response &res)
-{
-  if(req.set_actuator_state == true) // torque on
-  {
-    RM_LOG::PRINTLN("Wait a second for actuator enable", "GREEN");
-    waitCommThreadToTerminate();
-    open_manipulator_.allActuatorEnable();
-
-    pthread_mutex_lock(&mutex_); // mutex lock
-    {
-      moving_trajectory_flag_ = false;
-      present_joint_value = open_manipulator_.receiveAllJointActuatorValue();
-    }
-    pthread_mutex_unlock(&mutex_); // mutex unlock
-
-    startCommTimerThread();
-  }
-  else // torque off
-  {
-    RM_LOG::PRINTLN("Wait a second for actuator disable", "GREEN");
-    waitCommThreadToTerminate();
-    open_manipulator_.allActuatorDisable();
-    startCommTimerThread();
-  }
-
-  res.is_planned = true;
-  return true;
-}
-
 bool OM_CONTROLLER::getJointPositionMsgCallback(open_manipulator_msgs::GetJointPosition::Request &req,
                                                 open_manipulator_msgs::GetJointPosition::Response &res)
 {
@@ -779,6 +759,24 @@ bool OM_CONTROLLER::getKinematicsPoseMsgCallback(open_manipulator_msgs::GetKinem
   res.kinematics_pose.pose       = current_pose.pose;
 
   spinner.stop();
+  return true;
+}
+
+bool OM_CONTROLLER::setJointPositionMsgCallback(open_manipulator_msgs::SetJointPosition::Request &req,
+                                                open_manipulator_msgs::SetJointPosition::Response &res)
+{
+  open_manipulator_msgs::JointPosition msg = req.joint_position;
+  res.is_planned = calcPlannedPath(req.planning_group, msg);
+
+  return true;
+}
+
+bool OM_CONTROLLER::setKinematicsPoseMsgCallback(open_manipulator_msgs::SetKinematicsPose::Request &req,
+                                                 open_manipulator_msgs::SetKinematicsPose::Response &res)
+{
+  open_manipulator_msgs::KinematicsPose msg = req.kinematics_pose;
+  res.is_planned = calcPlannedPath(req.planning_group, msg);
+
   return true;
 }
 
@@ -1003,6 +1001,7 @@ void OM_CONTROLLER::moveitProcess(JointWayPoint* goal_joint_value)
     {
       step_cnt = 0;
       moveit_plan_flag_ = false;
+      moving_trajectory_flag_ = true;
     }
   }
 }
