@@ -49,10 +49,14 @@ add_executable(open_manipulator_6dof_teleop_keyboard src/open_manipulator_6dof_t
 add_dependencies(open_manipulator_6dof_teleop_keyboard ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(open_manipulator_6dof_teleop_keyboard ${catkin_LIBRARIES} )
 
+add_executable(open_manipulator_6dof_teleop_joystick src/open_manipulator_6dof_teleop_joystick.cpp)
+add_dependencies(open_manipulator_6dof_teleop_joystick ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(open_manipulator_6dof_teleop_joystick ${catkin_LIBRARIES} )
+
 ################################################################################
 # Install
 ################################################################################
-install(TARGETS open_manipulator_6dof_teleop_keyboard
+install(TARGETS open_manipulator_6dof_teleop_keyboard open_manipulator_6dof_teleop_joystick
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
