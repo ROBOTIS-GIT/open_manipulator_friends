@@ -8,4 +8,5 @@
       <param name="end_effector_name" value="$(arg end_effector)"/>
     </node>
   </group>
+
 </launch>
