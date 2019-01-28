@@ -55,7 +55,7 @@ OM_CONTROLLER::~OM_CONTROLLER()
 {
   waitCommThreadToTerminate();
   RM_LOG::INFO("Shutdown the OpenManipulator");
-  open_manipulator_.allActuatorDisable();
+  open_manipulator_.disableAllActuator();
   ros::shutdown();
 }
 
@@ -203,7 +203,7 @@ void *OM_CONTROLLER::calThread(void *param)
       // debug
       if(controller->using_moveit_ == false)
       {
-        if(!controller->open_manipulator_.isMoving() && trajectory_progress < 100) // error
+        if(!controller->open_manipulator_.getMovingState() && trajectory_progress < 100) // error
         {
           char str[100];
           sprintf(str, "[cal thread] Trajectory creation failed : %d %%", trajectory_progress);
@@ -339,7 +339,7 @@ void OM_CONTROLLER::initServer()
 void OM_CONTROLLER::openManipulatorOptionCallback(const std_msgs::String::ConstPtr &msg)
 {
   if(msg->data == "print_open_manipulator_setting")
-    open_manipulator_.checkManipulatorSetting();
+    open_manipulator_.printManipulatorSetting();
 }
 
 void OM_CONTROLLER::displayPlannedPathCallback(const moveit_msgs::DisplayTrajectory::ConstPtr &msg)
@@ -397,7 +397,7 @@ bool OM_CONTROLLER::goalJointSpacePathCallback(open_manipulator_msgs::SetJointPo
   pthread_mutex_lock(&mutex_); // mutex lock
   {
     trajectoryBufferClear();
-    open_manipulator_.jointTrajectoryMove(target_angle, req.path_time, present_joint_value);
+    open_manipulator_.makeJointTrajectory(target_angle, req.path_time, present_joint_value);
   }
   pthread_mutex_unlock(&mutex_); // mutex unlock
   startCalThread();
@@ -419,13 +419,13 @@ bool OM_CONTROLLER::goalJointSpacePathToKinematicsPoseCallback(open_manipulator_
                         req.kinematics_pose.pose.orientation.y,
                         req.kinematics_pose.pose.orientation.z);
 
-  target_pose.orientation = RM_MATH::convertQuaternionToRotation(q);
+  target_pose.orientation = RM_MATH::convertQuaternionToRotationMatrix(q);
 
   waitCalThreadToTerminate();
   pthread_mutex_lock(&mutex_); // mutex lock
   {
     trajectoryBufferClear();
-    open_manipulator_.jointTrajectoryMove(req.end_effector_name, target_pose, req.path_time, present_joint_value);
+    open_manipulator_.makeJointTrajectory(req.end_effector_name, target_pose, req.path_time, present_joint_value);
   }
   pthread_mutex_unlock(&mutex_); // mutex unlock
   startCalThread();
@@ -447,13 +447,13 @@ bool OM_CONTROLLER::goalTaskSpacePathCallback(open_manipulator_msgs::SetKinemati
                         req.kinematics_pose.pose.orientation.y,
                         req.kinematics_pose.pose.orientation.z);
 
-  target_pose.orientation = RM_MATH::convertQuaternionToRotation(q);
+  target_pose.orientation = RM_MATH::convertQuaternionToRotationMatrix(q);
 
   waitCalThreadToTerminate();
   pthread_mutex_lock(&mutex_); // mutex lock
   {
     trajectoryBufferClear();
-    open_manipulator_.taskTrajectoryMove(req.end_effector_name, target_pose, req.path_time, present_joint_value);
+    open_manipulator_.makeTaskTrajectory(req.end_effector_name, target_pose, req.path_time, present_joint_value);
   }
   pthread_mutex_unlock(&mutex_); // mutex unlock
   startCalThread();
@@ -474,7 +474,7 @@ bool OM_CONTROLLER::goalTaskSpacePathPositionOnlyCallback(open_manipulator_msgs:
   pthread_mutex_lock(&mutex_); // mutex lock
   {
     trajectoryBufferClear();
-    open_manipulator_.taskTrajectoryMove(req.end_effector_name, position, req.path_time, present_joint_value);
+    open_manipulator_.makeTaskTrajectory(req.end_effector_name, position, req.path_time, present_joint_value);
   }
   pthread_mutex_unlock(&mutex_); // mutex unlock
   startCalThread();
@@ -491,13 +491,13 @@ bool OM_CONTROLLER::goalTaskSpacePathOrientationOnlyCallback(open_manipulator_ms
                         req.kinematics_pose.pose.orientation.y,
                         req.kinematics_pose.pose.orientation.z);
 
-  Eigen::Matrix3d orientation = RM_MATH::convertQuaternionToRotation(q);
+  Eigen::Matrix3d orientation = RM_MATH::convertQuaternionToRotationMatrix(q);
 
   waitCalThreadToTerminate();
   pthread_mutex_lock(&mutex_); // mutex lock
   {
     trajectoryBufferClear();
-    open_manipulator_.taskTrajectoryMove(req.end_effector_name, orientation, req.path_time, present_joint_value);
+    open_manipulator_.makeTaskTrajectory(req.end_effector_name, orientation, req.path_time, present_joint_value);
   }
   pthread_mutex_unlock(&mutex_); // mutex unlock
   startCalThread();
@@ -518,7 +518,7 @@ bool OM_CONTROLLER::goalJointSpacePathFromPresentCallback(open_manipulator_msgs:
   pthread_mutex_lock(&mutex_); // mutex lock
   {
     trajectoryBufferClear();
-    open_manipulator_.jointTrajectoryMoveFromPresentPosition(target_angle, req.path_time, present_joint_value);
+    open_manipulator_.makeJointTrajectoryFromPresentPosition(target_angle, req.path_time, present_joint_value);
   }
   pthread_mutex_unlock(&mutex_); // mutex unlock
   startCalThread();
@@ -540,13 +540,13 @@ bool OM_CONTROLLER::goalTaskSpacePathFromPresentCallback(open_manipulator_msgs::
                         req.kinematics_pose.pose.orientation.y,
                         req.kinematics_pose.pose.orientation.z);
 
-  target_pose.orientation = RM_MATH::convertQuaternionToRotation(q);
+  target_pose.orientation = RM_MATH::convertQuaternionToRotationMatrix(q);
 
   waitCalThreadToTerminate();
   pthread_mutex_lock(&mutex_); // mutex lock
   {
     trajectoryBufferClear();
-    open_manipulator_.taskTrajectoryMoveFromPresentPose(req.planning_group, target_pose, req.path_time, present_joint_value);
+    open_manipulator_.makeTaskTrajectoryFromPresentPose(req.planning_group, target_pose, req.path_time, present_joint_value);
   }
   pthread_mutex_unlock(&mutex_); // mutex unlock
   startCalThread();
@@ -567,7 +567,7 @@ bool OM_CONTROLLER::goalTaskSpacePathFromPresentPositionOnlyCallback(open_manipu
   pthread_mutex_lock(&mutex_); // mutex lock
   {
     trajectoryBufferClear();
-    open_manipulator_.taskTrajectoryMoveFromPresentPose(req.planning_group, position, req.path_time, present_joint_value);
+    open_manipulator_.makeTaskTrajectoryFromPresentPose(req.planning_group, position, req.path_time, present_joint_value);
   }
   pthread_mutex_unlock(&mutex_); // mutex unlock
   startCalThread();
@@ -584,13 +584,13 @@ bool OM_CONTROLLER::goalTaskSpacePathFromPresentOrientationOnlyCallback(open_man
                         req.kinematics_pose.pose.orientation.y,
                         req.kinematics_pose.pose.orientation.z);
 
-  Eigen::Matrix3d orientation = RM_MATH::convertQuaternionToRotation(q);
+  Eigen::Matrix3d orientation = RM_MATH::convertQuaternionToRotationMatrix(q);
 
   waitCalThreadToTerminate();
   pthread_mutex_lock(&mutex_); // mutex lock
   {
     trajectoryBufferClear();
-    open_manipulator_.taskTrajectoryMoveFromPresentPose(req.planning_group, orientation, req.path_time, present_joint_value);
+    open_manipulator_.makeTaskTrajectoryFromPresentPose(req.planning_group, orientation, req.path_time, present_joint_value);
   }
   pthread_mutex_unlock(&mutex_); // mutex unlock
   startCalThread();
@@ -606,7 +606,7 @@ bool OM_CONTROLLER::goalToolControlCallback(open_manipulator_msgs::SetJointPosit
   {
     tool_ctrl_flag_ = true;
     for(int i = 0; i < req.joint_position.joint_name.size(); i ++)
-      open_manipulator_.toolMove(req.joint_position.joint_name.at(i), req.joint_position.position.at(i));
+      open_manipulator_.makeToolTrajectory(req.joint_position.joint_name.at(i), req.joint_position.position.at(i));
   }
   pthread_mutex_unlock(&mutex_); // mutex unlock
   if(!cal_thread_flag_) startCalThread();
@@ -622,7 +622,7 @@ bool OM_CONTROLLER::setActuatorStateCallback(open_manipulator_msgs::SetActuatorS
   {
     RM_LOG::PRINTLN("[Set actuator state] Wait a second for actuator enable", "GREEN");
     waitCommThreadToTerminate();
-    open_manipulator_.allActuatorEnable();
+    open_manipulator_.enableAllActuator();
 
     pthread_mutex_lock(&mutex_); // mutex lock
     {
@@ -637,7 +637,7 @@ bool OM_CONTROLLER::setActuatorStateCallback(open_manipulator_msgs::SetActuatorS
   {
     RM_LOG::PRINTLN("[Set actuator state] Wait a second for actuator disable", "GREEN");
     waitCommThreadToTerminate();
-    open_manipulator_.allActuatorDisable();
+    open_manipulator_.disableAllActuator();
     startCommTimerThread();
   }
 
@@ -662,7 +662,7 @@ bool OM_CONTROLLER::goalDrawingTrajectoryCallback(open_manipulator_msgs::SetDraw
       pthread_mutex_lock(&mutex_); // mutex lock
       {
         trajectoryBufferClear();
-        open_manipulator_.customTrajectoryMove(DRAWING_CIRCLE, req.end_effector_name, p_draw_circle_arg, req.path_time, present_joint_value);
+        open_manipulator_.makeCustomTrajectory(DRAWING_CIRCLE, req.end_effector_name, p_draw_circle_arg, req.path_time, present_joint_value);
       }
       pthread_mutex_unlock(&mutex_); // mutex unlock
       startCalThread();
@@ -679,7 +679,7 @@ bool OM_CONTROLLER::goalDrawingTrajectoryCallback(open_manipulator_msgs::SetDraw
       pthread_mutex_lock(&mutex_); // mutex lock
       {
         trajectoryBufferClear();
-        open_manipulator_.customTrajectoryMove(DRAWING_LINE, req.end_effector_name, p_draw_line_arg, req.path_time, present_joint_value);
+        open_manipulator_.makeCustomTrajectory(DRAWING_LINE, req.end_effector_name, p_draw_line_arg, req.path_time, present_joint_value);
       }
       pthread_mutex_unlock(&mutex_); // mutex unlock
       startCalThread();
@@ -696,7 +696,7 @@ bool OM_CONTROLLER::goalDrawingTrajectoryCallback(open_manipulator_msgs::SetDraw
       pthread_mutex_lock(&mutex_); // mutex lock
       {
         trajectoryBufferClear();
-        open_manipulator_.customTrajectoryMove(DRAWING_RHOMBUS, req.end_effector_name, p_draw_circle_arg, req.path_time, present_joint_value);
+        open_manipulator_.makeCustomTrajectory(DRAWING_RHOMBUS, req.end_effector_name, p_draw_circle_arg, req.path_time, present_joint_value);
       }
       pthread_mutex_unlock(&mutex_); // mutex unlock
       startCalThread();
@@ -713,7 +713,7 @@ bool OM_CONTROLLER::goalDrawingTrajectoryCallback(open_manipulator_msgs::SetDraw
       pthread_mutex_lock(&mutex_); // mutex lock
       {
         trajectoryBufferClear();
-        open_manipulator_.customTrajectoryMove(DRAWING_HEART, req.end_effector_name, p_draw_circle_arg, req.path_time, present_joint_value);
+        open_manipulator_.makeCustomTrajectory(DRAWING_HEART, req.end_effector_name, p_draw_circle_arg, req.path_time, present_joint_value);
       }
       pthread_mutex_unlock(&mutex_); // mutex unlock
       startCalThread();
@@ -798,7 +798,7 @@ bool OM_CONTROLLER::calcPlannedPath(const std::string planning_group, open_manip
 
   moveit::planning_interface::MoveGroupInterface::Plan my_plan;
 
-  if (open_manipulator_.isMoving() == false)
+  if (open_manipulator_.getMovingState() == false)
   {
     bool success = (move_group_->plan(my_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
 
@@ -849,7 +849,7 @@ bool OM_CONTROLLER::calcPlannedPath(const std::string planning_group, open_manip
 
   moveit::planning_interface::MoveGroupInterface::Plan my_plan;
 
-  if (open_manipulator_.isMoving() == false)
+  if (open_manipulator_.getMovingState() == false)
   {
     bool success = (move_group_->plan(my_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
 
@@ -882,7 +882,7 @@ void OM_CONTROLLER::publishOpenManipulatorStates()
   else
     msg.open_manipulator_moving_state = msg.STOPPED;
 
-  if(open_manipulator_.isEnabled(JOINT_DYNAMIXEL))
+  if(open_manipulator_.getActuatorEnabledState(JOINT_DYNAMIXEL))
     msg.open_manipulator_actuator_state = msg.ACTUATOR_ENABLED;
   else
     msg.open_manipulator_actuator_state = msg.ACTUATOR_DISABLED;
@@ -903,7 +903,7 @@ void OM_CONTROLLER::publishKinematicsPose()
     msg.pose.position.x = pose.position[0];
     msg.pose.position.y = pose.position[1];
     msg.pose.position.z = pose.position[2];
-    Eigen::Quaterniond orientation = RM_MATH::convertRotationToQuaternion(pose.orientation);
+    Eigen::Quaterniond orientation = RM_MATH::convertRotationMatrixToQuaternion(pose.orientation);
     msg.pose.orientation.w = orientation.w();
     msg.pose.orientation.x = orientation.x();
     msg.pose.orientation.y = orientation.y();

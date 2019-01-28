@@ -23,17 +23,17 @@
 #include "CustomTrajectory.h"
 #include "Kinematics.h"
 
-#define DRAWING_LINE "custom_trajectory_line"
-#define DRAWING_CIRCLE "custom_trajectory_circle"
+#define DRAWING_LINE    "custom_trajectory_line"
+#define DRAWING_CIRCLE  "custom_trajectory_circle"
 #define DRAWING_RHOMBUS "custom_trajectory_rhombus"
-#define DRAWING_HEART "custom_trajectory_heart"
+#define DRAWING_HEART   "custom_trajectory_heart"
 
 #define JOINT_DYNAMIXEL "joint_dxl"
-#define TOOL_DYNAMIXEL "tool_dxl"
+#define TOOL_DYNAMIXEL  "tool_dxl"
 
-#define X_AXIS RM_MATH::makeVector3(1.0, 0.0, 0.0)
-#define Y_AXIS RM_MATH::makeVector3(0.0, 1.0, 0.0)
-#define Z_AXIS RM_MATH::makeVector3(0.0, 0.0, 1.0)
+#define X_AXIS RM_MATH::Vector3(1.0, 0.0, 0.0)
+#define Y_AXIS RM_MATH::Vector3(0.0, 1.0, 0.0)
+#define Z_AXIS RM_MATH::Vector3(0.0, 0.0, 1.0)
 
 class OPEN_MANIPULATOR : public ROBOTIS_MANIPULATOR::RobotisManipulator
 {
