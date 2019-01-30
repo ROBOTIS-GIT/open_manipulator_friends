@@ -83,8 +83,6 @@ void OM_TELEOP::kinematicsPoseCallback(const open_manipulator_msgs::KinematicsPo
 }
 void OM_TELEOP::joyCallback(const sensor_msgs::Joy::ConstPtr &msg)
 {
-
-  ROS_WARN("asdfasdf");
   if(msg->axes.at(1) >= 0.9) setGoal("x+");
   else if(msg->axes.at(1) <= -0.9) setGoal("x-");
   else if(msg->axes.at(0) >=  0.9) setGoal("y+");

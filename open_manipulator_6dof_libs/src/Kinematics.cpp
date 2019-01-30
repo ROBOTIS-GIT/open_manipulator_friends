@@ -129,7 +129,7 @@ void SolverUsingChainRuleandJacobian::forwardSolverUsingChainRule(Manipulator *m
 bool SolverUsingChainRuleandJacobian::inverseSolverUsingJacobian(Manipulator *manipulator, Name tool_name, Pose target_pose, std::vector<JointValue> *goal_joint_value)
 {
   const double lambda = 0.7;
-  const int8_t iteration = 10;
+  const int8_t iteration = 100; //10
 
   Manipulator _manipulator = *manipulator;
 
@@ -289,7 +289,7 @@ bool SolverUsingChainRuleandSingularityRobustJacobian::inverseSolverUsingSRJacob
   //solver parameter
   double lambda = 0.0;
   const double param = 0.002;
-  const int8_t iteration = 10;
+  const int8_t iteration = 100; //10
 
   const double gamma = 0.5;             //rollback delta
 
@@ -992,50 +992,3 @@ bool SolverCustomizedforOpenManipulatorChain::chainCustomInverseKinematics(Manip
   *goal_joint_value = {};
   return false;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

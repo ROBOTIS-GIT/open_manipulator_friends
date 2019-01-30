@@ -110,9 +110,8 @@ void OpenManipulator::initManipulator(bool using_actual_robot_state, STRING usb_
   /*****************************************************************************
   ** Initialize Kinematics 
   *****************************************************************************/
-  //kinematics_ = new kinematics::SolverCustomizedforOpenManipulatorChain();
-  kinematics_ = new kinematics::SolverUsingChainRuleandJacobian();
-  //kinematics_ = new kinematics::SolverUsingChainRuleandSingularityRobustPositionOnlyJacobian();
+  kinematics_ = new kinematics::SolverUsingChainRuleandSingularityRobustJacobian();
+  //kinematics_ = new kinematics::SolverUsingChainRuleandJacobian();
   addKinematics(kinematics_);
 
   if(using_actual_robot_state)
@@ -160,7 +159,7 @@ void OpenManipulator::initManipulator(bool using_actual_robot_state, STRING usb_
     STRING gripper_dxl_opt_arg[2];
     void *p_gripper_dxl_opt_arg = &gripper_dxl_opt_arg;
     gripper_dxl_opt_arg[0] = "Profile_Acceleration";
-    gripper_dxl_opt_arg[1] = "20";
+    gripper_dxl_opt_arg[1] = "40";
     setToolActuatorMode(TOOL_DYNAMIXEL, p_gripper_dxl_opt_arg);
 
     gripper_dxl_opt_arg[0] = "Profile_Velocity";
