@@ -289,7 +289,7 @@ bool SolverUsingChainRuleandSingularityRobustJacobian::inverseSolverUsingSRJacob
   //solver parameter
   double lambda = 0.0;
   const double param = 0.002;
-  const int8_t iteration = 100; //10
+  const uint8_t iteration = 500; //10
 
   const double gamma = 0.5;             //rollback delta
 
@@ -361,7 +361,7 @@ bool SolverUsingChainRuleandSingularityRobustJacobian::inverseSolverUsingSRJacob
   ////////////////////////////debug//////////////////////////////////
 
   //////////////////////////solving loop///////////////////////////////
-  for (int8_t count = 0; count < iteration; count++)
+  for (uint8_t count = 0; count < iteration; count++)
   {
     //////////solve using jacobian//////////
     jacobian = this->jacobian(&_manipulator, tool_name);
@@ -375,7 +375,7 @@ bool SolverUsingChainRuleandSingularityRobustJacobian::inverseSolverUsingSRJacob
 
     present_angle = _manipulator.getAllActiveJointPosition();
     set_angle.clear();
-    for (int8_t index = 0; index < _manipulator.getDOF(); index++)
+    for (uint8_t index = 0; index < _manipulator.getDOF(); index++)
       set_angle.push_back(present_angle.at(index) + angle_changed(index));
     _manipulator.setAllActiveJointPosition(set_angle);
     solveForwardKinematics(&_manipulator);
@@ -417,7 +417,7 @@ bool SolverUsingChainRuleandSingularityRobustJacobian::inverseSolverUsingSRJacob
       #endif
       //////////////////////////debug//////////////////////////////////
       *goal_joint_value = _manipulator.getAllActiveJointValue();
-      for(int8_t index = 0; index < _manipulator.getDOF(); index++)
+      for(uint8_t index = 0; index < _manipulator.getDOF(); index++)
       {
         goal_joint_value->at(index).velocity = 0.0;
         goal_joint_value->at(index).acceleration = 0.0;
@@ -432,7 +432,7 @@ bool SolverUsingChainRuleandSingularityRobustJacobian::inverseSolverUsingSRJacob
     else
     {
       present_angle = _manipulator.getAllActiveJointPosition();
-      for (int8_t index = 0; index < _manipulator.getDOF(); index++)
+      for (uint8_t index = 0; index < _manipulator.getDOF(); index++)
         set_angle.push_back(present_angle.at(index) - (gamma * angle_changed(index)));
       _manipulator.setAllActiveJointPosition(set_angle);
 

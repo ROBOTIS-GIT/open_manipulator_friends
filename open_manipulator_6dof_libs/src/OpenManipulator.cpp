@@ -85,7 +85,7 @@ void OpenManipulator::initManipulator(bool using_actual_robot_state, STRING usb_
            robotis_manipulator_math::convertRPY2RotationMatrix(0.0, 0.0, 0.0), // relative orientation
            Y_AXIS, // axis of rotation
            15,     // actuator id
-           2.08,    // max joint limit (2.0 rad)
+           2.09,    // max joint limit (2.0 rad)
            -1.98);  // min joint limit (-2.0 rad)
 
   addJoint("joint6", // my name
@@ -159,7 +159,7 @@ void OpenManipulator::initManipulator(bool using_actual_robot_state, STRING usb_
     STRING gripper_dxl_opt_arg[2];
     void *p_gripper_dxl_opt_arg = &gripper_dxl_opt_arg;
     gripper_dxl_opt_arg[0] = "Profile_Acceleration";
-    gripper_dxl_opt_arg[1] = "40";
+    gripper_dxl_opt_arg[1] = "60";
     setToolActuatorMode(TOOL_DYNAMIXEL, p_gripper_dxl_opt_arg);
 
     gripper_dxl_opt_arg[0] = "Profile_Velocity";
