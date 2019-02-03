@@ -49,10 +49,10 @@ include_directories(
 )
 
 add_library(open_manipulator_6dof_libs
-  src/OpenManipulator.cpp
-  src/CustomTrajectory.cpp
-  src/Dynamixel.cpp
-  src/Kinematics.cpp
+  src/open_manipulator.cpp
+  src/custom_trajectory.cpp
+  src/dynamixel.cpp
+  src/kinematics.cpp
 )
 
 add_dependencies(open_manipulator_6dof_libs ${catkin_EXPORTED_TARGETS})

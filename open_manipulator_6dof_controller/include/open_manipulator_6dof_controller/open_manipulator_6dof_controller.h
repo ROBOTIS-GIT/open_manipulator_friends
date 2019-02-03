@@ -50,7 +50,7 @@
 #include "open_manipulator_msgs/GetKinematicsPose.h"
 #include "open_manipulator_msgs/OpenManipulatorState.h"
 
-#include "open_manipulator_6dof_libs/OpenManipulator.h"
+#include "open_manipulator_6dof_libs/open_manipulator.h"
 
 namespace open_manipulator_controller
 {
@@ -68,7 +68,7 @@ class OpenManipulatorController
   double control_period_;
 
   // ROS Publisher
-  ros::Publisher open_manipulator_state_pub_;
+  ros::Publisher open_manipulator_states_pub_;
   std::vector<ros::Publisher> open_manipulator_kinematics_pose_pub_;
   ros::Publisher open_manipulator_joint_states_pub_;
   std::vector<ros::Publisher> gazebo_goal_joint_position_pub_;
@@ -83,6 +83,8 @@ class OpenManipulatorController
   // ROS Service Server
   ros::ServiceServer goal_joint_space_path_server_;
   ros::ServiceServer goal_joint_space_path_to_kinematics_pose_server_;
+  ros::ServiceServer goal_joint_space_path_to_kinematics_position_server_;
+  ros::ServiceServer goal_joint_space_path_to_kinematics_orientation_server_;
   ros::ServiceServer goal_task_space_path_server_;
   ros::ServiceServer goal_task_space_path_position_only_server_;
   ros::ServiceServer goal_task_space_path_orientation_only_server_;
@@ -112,9 +114,9 @@ class OpenManipulatorController
   OpenManipulator open_manipulator_;
 
   // flag parameter
-  bool tool_ctrl_flag_;
-  bool timer_thread_flag_;
-  bool moveit_plan_flag_;
+  bool tool_ctrl_state_;
+  bool timer_thread_state_;
+  bool moveit_plan_state_;
 
  public:
 
@@ -139,6 +141,12 @@ class OpenManipulatorController
                                   open_manipulator_msgs::SetJointPosition::Response &res);
 
   bool goalJointSpacePathToKinematicsPoseCallback(open_manipulator_msgs::SetKinematicsPose::Request  &req,
+                                                  open_manipulator_msgs::SetKinematicsPose::Response &res);
+
+  bool goalJointSpacePathToKinematicsPositionCallback(open_manipulator_msgs::SetKinematicsPose::Request  &req,
+                                                  open_manipulator_msgs::SetKinematicsPose::Response &res);
+
+  bool goalJointSpacePathToKinematicsOrientationCallback(open_manipulator_msgs::SetKinematicsPose::Request  &req,
                                                   open_manipulator_msgs::SetKinematicsPose::Response &res);
 
   bool goalTaskSpacePathCallback(open_manipulator_msgs::SetKinematicsPose::Request  &req,
