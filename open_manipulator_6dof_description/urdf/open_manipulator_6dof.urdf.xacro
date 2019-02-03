@@ -380,7 +380,7 @@
   <joint name="gripper" type="prismatic">
     <parent link="link7"/>
     <child link="gripper_link"/>
-    <origin xyz="0.0 0.019 0.0707" rpy="0 0 0"/>
+    <origin xyz="0.0 0.021 0.0707" rpy="0 0 0"/>
     <axis xyz="0 1 0"/>
     <limit velocity="4.8" effort="1" lower="-0.010" upper="0.015" />
   </joint>
@@ -426,7 +426,7 @@
   <joint name="gripper_sub" type="prismatic">
     <parent link="link7"/>
     <child link="gripper_link_sub"/>
-    <origin xyz="0.0 -0.019 0.0707" rpy="0 0 0"/>
+    <origin xyz="0.0 -0.021 0.0707" rpy="0 0 0"/>
     <axis xyz="0 -1 0"/>
     <limit velocity="4.8" effort="1" lower="-0.010" upper="0.015" />
     <mimic joint="gripper" multiplier="1"/>
