@@ -117,7 +117,7 @@ void *OpenManipulatorController::timerThread(void *param)
     //log::info("control time : ", controller->getControlPeriod() - delta_nsec);
     if(delta_nsec > controller->getControlPeriod())
     {
-      //log::warn("Over the control time : ", delta_nsec);
+      log::warn("Over the control time : ", delta_nsec);
       next_time = curr_time;
     }
     else

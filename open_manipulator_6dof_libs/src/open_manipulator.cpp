@@ -117,7 +117,7 @@ void OpenManipulator::initOpenManipulator(bool using_actual_robot_state, STRING 
   if(using_actual_robot_state)
   {
     /*****************************************************************************
-    ** Initialize ㅓoint Actuator
+    ** Initialize Joint Actuator
     *****************************************************************************/
     // actuator_ = new dynamixel::JointDynamixel();
     actuator_ = new dynamixel::JointDynamixelProfileControl(control_loop_time);
@@ -141,6 +141,52 @@ void OpenManipulator::initOpenManipulator(bool using_actual_robot_state, STRING 
     void *p_joint_dxl_mode_arg = &joint_dxl_mode_arg;
     setJointActuatorMode(JOINT_DYNAMIXEL, jointDxlId, p_joint_dxl_mode_arg);
 
+    // Set joint actuator parameter
+    jointDxlId.clear();
+    jointDxlId.push_back(12);
+    STRING joint_dxl_opt_arg[2];
+    void *p_joint_dxl_opt_arg = &joint_dxl_opt_arg;
+    joint_dxl_opt_arg[0] = "Position_P_Gain";
+    joint_dxl_opt_arg[1] = "1000"; //1300
+    setJointActuatorMode(JOINT_DYNAMIXEL, jointDxlId, p_joint_dxl_opt_arg);
+
+    joint_dxl_opt_arg[0] = "Position_I_Gain";
+    joint_dxl_opt_arg[1] = "30";
+    setJointActuatorMode(JOINT_DYNAMIXEL, jointDxlId, p_joint_dxl_opt_arg);
+
+    joint_dxl_opt_arg[0] = "Position_D_Gain";
+    joint_dxl_opt_arg[1] = "500";  //600
+    setJointActuatorMode(JOINT_DYNAMIXEL, jointDxlId, p_joint_dxl_opt_arg);
+
+    jointDxlId.clear();
+    jointDxlId.push_back(13);
+    joint_dxl_opt_arg[0] = "Position_P_Gain";
+    joint_dxl_opt_arg[1] = "850";
+    setJointActuatorMode(JOINT_DYNAMIXEL, jointDxlId, p_joint_dxl_opt_arg);
+
+    joint_dxl_opt_arg[0] = "Position_I_Gain";
+    joint_dxl_opt_arg[1] = "30";
+    setJointActuatorMode(JOINT_DYNAMIXEL, jointDxlId, p_joint_dxl_opt_arg);
+
+    joint_dxl_opt_arg[0] = "Position_D_Gain";
+    joint_dxl_opt_arg[1] = "250";
+    setJointActuatorMode(JOINT_DYNAMIXEL, jointDxlId, p_joint_dxl_opt_arg);
+
+    jointDxlId.clear();
+    jointDxlId.push_back(15);
+    joint_dxl_opt_arg[0] = "Position_P_Gain";
+    joint_dxl_opt_arg[1] = "850";
+    setJointActuatorMode(JOINT_DYNAMIXEL, jointDxlId, p_joint_dxl_opt_arg);
+
+    joint_dxl_opt_arg[0] = "Position_I_Gain";
+    joint_dxl_opt_arg[1] = "20";
+    setJointActuatorMode(JOINT_DYNAMIXEL, jointDxlId, p_joint_dxl_opt_arg);
+
+    joint_dxl_opt_arg[0] = "Position_D_Gain";
+    joint_dxl_opt_arg[1] = "60";
+    setJointActuatorMode(JOINT_DYNAMIXEL, jointDxlId, p_joint_dxl_opt_arg);
+
+
 
     /*****************************************************************************
     ** Initialize Tool Actuator
@@ -159,7 +205,7 @@ void OpenManipulator::initOpenManipulator(bool using_actual_robot_state, STRING 
     STRING gripper_dxl_opt_arg[2];
     void *p_gripper_dxl_opt_arg = &gripper_dxl_opt_arg;
     gripper_dxl_opt_arg[0] = "Profile_Acceleration";
-    gripper_dxl_opt_arg[1] = "60";
+    gripper_dxl_opt_arg[1] = "40";
     setToolActuatorMode(TOOL_DYNAMIXEL, p_gripper_dxl_opt_arg);
 
     gripper_dxl_opt_arg[0] = "Profile_Velocity";
