@@ -142,9 +142,9 @@ TaskWaypoint Circle::drawCircle(double tick)
   diff_pose[0] = (cos(get_time_var)-1)*cos(start_angular_position_) - sin(get_time_var)*sin(start_angular_position_);
   diff_pose[1] = (cos(get_time_var)-1)*sin(start_angular_position_) + sin(get_time_var)*cos(start_angular_position_);
 
-  pose.kinematic.position(X_AXIS) = start_pose_.kinematic.position(X_AXIS) + radius_ * diff_pose[0];
+  pose.kinematic.position(X_AXIS) = start_pose_.kinematic.position(X_AXIS) ;
   pose.kinematic.position(Y_AXIS) = start_pose_.kinematic.position(Y_AXIS) + radius_ * diff_pose[1];
-  pose.kinematic.position(Z_AXIS) = start_pose_.kinematic.position(Z_AXIS);
+  pose.kinematic.position(Z_AXIS) = start_pose_.kinematic.position(Z_AXIS) + radius_ * diff_pose[0];
 
   pose.kinematic.orientation = start_pose_.kinematic.orientation;
 

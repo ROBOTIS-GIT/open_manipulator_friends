@@ -15,7 +15,6 @@
 *******************************************************************************/
 
 /* Authors: Darby Lim, Hye-Jong KIM, Ryan Shim, Yong-Ho Na */
-
 #include "../include/open_manipulator_6dof_libs/open_manipulator.h"
 
 OpenManipulator::OpenManipulator()
@@ -244,4 +243,23 @@ void OpenManipulator::processOpenManipulator(double present_time)
   if(goal_joint_value.size() != 0) sendAllJointActuatorValue(goal_joint_value);
   if(goal_tool_value.size() != 0) sendAllToolActuatorValue(goal_tool_value);
   solveForwardKinematics();
+}
+
+void OpenManipulator::switchingKinematics()
+{
+  static bool kinematics_flag;
+  kinematics_flag = !kinematics_flag;
+
+  delete kinematics_;
+  if(kinematics_flag)
+  {
+    log::info("SolverUsingCRAndSRPositionOnlyJacobian");
+    kinematics_ = new kinematics::SolverUsingCRAndSRPositionOnlyJacobian();
+  }
+  else
+  {
+    log::info("SolverUsingCRAndSRJacobian");
+    kinematics_ = new kinematics::SolverUsingCRAndSRJacobian();
+  }  
+  addKinematics(kinematics_);
 }

@@ -211,6 +211,8 @@ void OpenManipulatorController::openManipulatorOptionCallback(const std_msgs::St
 {
   if(msg->data == "print_open_manipulator_setting")
     open_manipulator_.printManipulatorSetting();
+  if(msg->data == "switching_kinematics")
+    open_manipulator_.switchingKinematics();
 }
 
 void OpenManipulatorController::displayPlannedPathCallback(const moveit_msgs::DisplayTrajectory::ConstPtr &msg)
