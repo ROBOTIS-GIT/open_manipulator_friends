@@ -16,6 +16,10 @@
 
 /* Authors: Darby Lim, Hye-Jong KIM, Ryan Shim, Yong-Ho Na */
 
+/***********************************************************
+** Modified by Hae-Bum Jung
+************************************************************/
+
 #ifndef OPEN_MANIPULTOR_H_
 #define OPEN_MANIPULTOR_H_
 

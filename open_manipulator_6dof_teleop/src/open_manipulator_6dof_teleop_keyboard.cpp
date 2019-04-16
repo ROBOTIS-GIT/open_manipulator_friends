@@ -16,6 +16,10 @@
 
 /* Authors: Darby Lim, Hye-Jong KIM, Ryan Shim, Yong-Ho Na */
 
+/***********************************************************
+** Modified by Hae-Bum Jung
+************************************************************/
+
 #include "open_manipulator_6dof_teleop/open_manipulator_6dof_teleop_keyboard.h"
 
 using namespace open_manipulator_teleop;
