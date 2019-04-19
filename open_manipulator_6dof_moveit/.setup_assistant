@@ -1,0 +1,11 @@
+moveit_setup_assistant_config:
+  URDF:
+    package: open_manipulator_6dof_description
+    relative_path: urdf/open_manipulator_6dof.urdf.xacro
+    xacro_args: "--inorder "
+  SRDF:
+    relative_path: config/open_manipulator_6dof.srdf
+  CONFIG:
+    author_name: Hae-Bum Jung
+    author_email: zang09@naver.com
+    generated_timestamp: 1548315395

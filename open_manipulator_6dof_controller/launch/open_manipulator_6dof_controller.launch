@@ -1,0 +1,26 @@
+﻿<launch>
+  <arg name="use_robot_name"         default="open_manipulator_6dof"/>
+
+  <arg name="dynamixel_usb_port"     default="/dev/ttyACM0"/>
+  <arg name="dynamixel_baud_rate"    default="1000000"/>
+
+  <arg name="control_period"         default="0.010"/>
+
+  <arg name="use_platform"           default="true"/>
+
+  <arg name="use_moveit"             default="false"/>
+  <arg name="planning_group_name"    default="arm"/>
+
+  <group if="$(arg use_moveit)">
+    <include file="$(find open_manipulator_6dof_controller)/launch/open_manipulator_6dof_moveit.launch">
+    </include>
+  </group>
+
+  <node name="$(arg use_robot_name)" pkg="open_manipulator_6dof_controller" type="open_manipulator_6dof_controller" output="screen" args="$(arg dynamixel_usb_port) $(arg dynamixel_baud_rate)">
+      <param name="using_platform"       value="$(arg use_platform)"/>
+      <param name="using_moveit"         value="$(arg use_moveit)"/>
+      <param name="planning_group_name"  value="$(arg planning_group_name)"/>
+      <param name="control_period"       value="$(arg control_period)"/>
+  </node>
+
+</launch>

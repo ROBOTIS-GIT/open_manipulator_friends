@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>open_manipulator_6dof_controller</name>
+  <version>0.0.0</version>
+  <description>
+    OpenManipulator 6DOF controller package
+  </description>>
+  <license>Apache 2.0</license>
+  <author email="zang09@naver.com">Hae-Bum Jung</author>
+  <author email="thlim@robotis.com">Darby Lim</author>
+  <author email="hjkim@robotis.com">Hye-Jong KIM</author>
+  <author email="jhshim@robotis.com">Ryan Shim</author>
+  <author email="yhna@robotis.com">Yong-Ho Na</author>
+  <maintainer email="pyo@robotis.com">Pyo</maintainer>
+  <url type="repository">https://github.com/ROBOTIS-GIT/open_manipulator_friends</url>
+  <buildtool_depend>catkin</buildtool_depend>
+  <depend>roscpp</depend>
+  <depend>std_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>moveit_msgs</depend>
+  <depend>trajectory_msgs</depend>
+  <depend>open_manipulator_msgs</depend>
+  <depend>moveit_core</depend>
+  <depend>moveit_ros_planning</depend>
+  <depend>moveit_ros_planning_interface</depend>
+  <depend>robotis_manipulator</depend>
+  <depend>open_manipulator_6dof_libs</depend>
+  <depend>cmake_modules</depend>
+</package>
