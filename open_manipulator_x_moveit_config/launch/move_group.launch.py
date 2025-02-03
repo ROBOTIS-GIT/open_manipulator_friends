@@ -60,15 +60,32 @@ def generate_launch_description():
     with open(kinematics_yaml_path, "r") as file:
         kinematics_yaml = yaml.safe_load(file)
 
+    robot_description_kinematics = {"robot_description_kinematics": kinematics_yaml}
+    # joint_limits yaml
+    joint_limits_yaml_path = os.path.join(
+        get_package_share_directory("open_manipulator_x_moveit_config"),
+        "config",
+        "joint_limits.yaml",
+    )
+    with open(joint_limits_yaml_path, "r") as file:
+        joint_limits_yaml = yaml.safe_load(file)
+    robot_description_joint_limits = {"robot_description_planning": joint_limits_yaml}
+
     # Planning Functionality
     ompl_planning_pipeline_config = {
         "move_group": {
-            "planning_plugin": "ompl_interface/OMPLPlanner",
-            "request_adapters": """default_planner_request_adapters/AddTimeOptimalParameterization \
-            default_planner_request_adapters/FixWorkspaceBounds \
-            default_planner_request_adapters/FixStartStateBounds \
-            default_planner_request_adapters/FixStartStateCollision \
-            default_planner_request_adapters/FixStartStatePathConstraints""",
+            "planning_plugins": ["ompl_interface/OMPLPlanner",],
+            "request_adapters": [
+                "default_planning_request_adapters/ResolveConstraintFrames",
+                "default_planning_request_adapters/ValidateWorkspaceBounds",
+                "default_planning_request_adapters/CheckStartStateBounds",
+                "default_planning_request_adapters/CheckStartStateCollision",
+            ],
+            "response_adapters": [
+                "default_planning_response_adapters/AddTimeOptimalParameterization",
+                "default_planning_response_adapters/ValidateSolution",
+                "default_planning_response_adapters/DisplayMotionPath",
+            ],
             "start_state_max_bounds_error": 0.1,
         }
     }
@@ -129,7 +146,8 @@ def generate_launch_description():
         parameters=[
             robot_description,
             robot_description_semantic,
-            kinematics_yaml,
+            robot_description_kinematics,
+            robot_description_joint_limits,
             ompl_planning_pipeline_config,
             trajectory_execution,
             moveit_controllers,

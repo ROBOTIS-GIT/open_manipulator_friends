@@ -36,6 +36,20 @@
                 </state_interface>
                 <state_interface name="velocity"/>
             </joint>
+            <joint name="joint5">
+                <command_interface name="position"/>
+                <state_interface name="position">
+                  <param name="initial_value">${initial_positions['joint5']}</param>
+                </state_interface>
+                <state_interface name="velocity"/>
+            </joint>  
+            <joint name="joint6">
+                <command_interface name="position"/>
+                <state_interface name="position">
+                  <param name="initial_value">${initial_positions['joint6']}</param>
+                </state_interface>
+                <state_interface name="velocity"/>
+            </joint>                      
             <joint name="gripper_left_joint">
                 <command_interface name="position"/>
                 <state_interface name="position">

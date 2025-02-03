@@ -40,3 +40,13 @@ joint_limits:
     max_velocity: 4.796164779
     has_acceleration_limits: true
     max_acceleration: 18.7253757
+  joint5:
+    has_velocity_limits: true
+    max_velocity: 4.796164779
+    has_acceleration_limits: true
+    max_acceleration: 18.7253757
+  joint6:
+    has_velocity_limits: true
+    max_velocity: 4.796164779
+    has_acceleration_limits: true
+    max_acceleration: 18.7253757  
